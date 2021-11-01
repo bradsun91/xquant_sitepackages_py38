@@ -39,8 +39,7 @@ class Backtest(object):
         heartbeat: k bar周期，以秒计，如分钟线为60，模拟交易使用
         start_date: 策略回测起始时间
         end_date: 策略回测结束时间
-        end_date: 策略回测结束时间
-        data_handler: (Class) 处理市场数据的类
+        data_handler: (Class) 处理市场数据的类，这里实际调用的是CSVDataHandler
         execution_handler: (Class) 处理order/fill的类
         portfolio: (Class) 虚拟账户，追踪组合头寸等信息的类
         strategy: (Class) 根据市场数据生成信号的策略类

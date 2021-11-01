@@ -10,7 +10,7 @@ print("py38_site_packages/data.py")
 import datetime
 import os
 import sys
-import pandas as pd
+# import pandas as pd
 import functools
 from collections import namedtuple
 from abc import ABCMeta, abstractmethod
