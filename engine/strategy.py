@@ -8,13 +8,14 @@ market data by DataHandler -> Strategy -> signal for Portfolio
 @author: Leon Zhang
 @version: 0.3
 """
-
+print("py38_site_packages/strategy.py")
 import pandas as pd
 from abc import ABCMeta, abstractmethod
 from .event import SignalEvent
 
 
 class Strategy(object):
+    print("strategy.py - Strategy")
     """
     Strategy抽象基类
     此类及其继承类通过对Bars(SD-OHLCV)（由DataHandler对象生成）处理产生Signal对象
@@ -24,6 +25,7 @@ class Strategy(object):
 
     @abstractmethod
     def calculate_signals(self, *args):
+        print("strategy.py - Strategy - calculate_signals")
         """
         提供计算信号的机制
         """
@@ -33,12 +35,14 @@ class Strategy(object):
 ######################### 以下为使用的例子，请直接参考demo文件夹 ###############
 # 例1：买入并持有的策略
 class BuyAndHoldStrategy(Strategy):
+    print("strategy.py - BuyAndHoldStrategy")
     """
     最简单的例子：对所以股票持多头策略
     用于：测试代码；作为benchmark
     """
 
     def __init__(self, bars, events):
+        print("strategy.py - BuyAndHoldStrategy - __init__")
         """
         初始化买入持有策略
         参数：
@@ -52,6 +56,7 @@ class BuyAndHoldStrategy(Strategy):
         self.bought = self._calculate_initial_bought()  # 字典
 
     def _calculate_initial_bought(self):
+        print("strategy.py - BuyAndHoldStrategy - _calculate_initial_bought")
         """
         添加key到bought字典，将所有股票的值设为False，意指尚未持有
         """
@@ -61,6 +66,7 @@ class BuyAndHoldStrategy(Strategy):
         return bought
 
     def calculate_signals(self, event):
+        print("strategy.py - BuyAndHoldStrategy - calculate_signals")
         """
         此策略对每只股票只产生一个信号，那就是买入，没有exit信号
         从策略初始化的那个时间买入持有
@@ -79,11 +85,13 @@ class BuyAndHoldStrategy(Strategy):
 
 # 例2：移动双均线策略（最简单的动量策略）
 class MovingAverageCrossStrategy(Strategy):
+    print("strategy.py - MovingAverageCrossStrategy")
     """
     移动双均线策略
     """
 
     def __init__(self, bars, events, long_window=10, short_window=5):
+        print("strategy.py - MovingAverageCrossStrategy - __init__")
         """
         初始化移动双均线策略
         参数：
@@ -99,6 +107,7 @@ class MovingAverageCrossStrategy(Strategy):
         self.bought = self._calculate_initial_bought()
 
     def _calculate_initial_bought(self):
+        print("strategy.py - MovingAverageCrossStrategy - _calculate_initial_bought")
         """
         添加key到bought字典，将所有股票的值设为False，意指尚未持有
         TODO：是否可以用组合中虚拟账户来监控，strategy只管发信号呢？
@@ -109,6 +118,7 @@ class MovingAverageCrossStrategy(Strategy):
         return bought
 
     def calculate_signals(self, event):
+        print("strategy.py - MovingAverageCrossStrategy - calculate_signals")
         """
         当短期均线（如5日线）上穿长期均线（如10日线），买入
         反之，卖出；不做空

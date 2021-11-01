@@ -19,6 +19,7 @@ from .event import BarEvent
 
 
 class DataHandler(object):
+    print("data.py - DataHandler")
     """
     DataHandler抽象基类，不允许直接实例化，只用于继承
     继承的DataHandler对象用于对每个symbol生成bars序列（OHLCV）
@@ -30,6 +31,7 @@ class DataHandler(object):
 
     @abstractmethod
     def get_latest_bars(self, symbol, N=1):
+        print("data.py - DataHandler - get_latest_bars")
         """
         从latest_symbol列表中返回最近的几根bar，
         如果可用值小于N，则返回全部所能的使用k bar
@@ -38,6 +40,7 @@ class DataHandler(object):
 
     @abstractmethod
     def update_bars(self):
+        print("data.py - DataHandler - update_bars")
         """
         将股票列表中bar(条状图，k线)更新到最近的那一根
         """
@@ -49,7 +52,9 @@ class DataHandler(object):
 ######################
 
 class CSVDataHandler(DataHandler):
+    print("data.py - CSVDataHandler")
     def __init__(self, events, csv_dir, symbol_list, start_date, end_date):
+        print("data.py - CSVDataHandler - __init__")
         self.events = events
         self.csv_dir = csv_dir
         self.symbol_list = symbol_list
@@ -63,6 +68,7 @@ class CSVDataHandler(DataHandler):
         self._open_convert_csv_files()
 
     def _open_convert_csv_files(self):
+        print("data.py - CSVDataHandler - _open_convert_csv_files")
         """
         从数据文件夹中打开CSV文件，转换成pandas的DataFrames格式，union所有股票index, 数据向前填充
         列：'datetime','open','high','low','close','volume' 日期升序排列
@@ -85,6 +91,7 @@ class CSVDataHandler(DataHandler):
             self.symbol_data[s] = self.symbol_data[s].reindex(index=comb_index, method='pad').iterrows()
 
     def _get_new_bar(self, symbol):
+        print("data.py - CSVDataHandler - _get_new_bar")
         """
         返回最新的bar，格式为(symbol, datetime, open, high, low, close, volume)
         生成器，每次调用生成一个新的bar，直到数据最后，在update_bars()中调用
@@ -94,6 +101,7 @@ class CSVDataHandler(DataHandler):
 
 
     def get_latest_bars(self, symbol, N=5): # 1024 Brad将N=1改为N=5
+        print("data.py - CSVDataHandler - get_latest_bars")
         """
         从latest_symbol列表中返回最新的N个bar，或者所能返回的最大数量的bar
         """
@@ -105,6 +113,7 @@ class CSVDataHandler(DataHandler):
             return bars_list[-N:]
 
     def get_latest_bar(self, symbol):
+        print("data.py - CSVDataHandler - get_latest_bar")
         """
         从latest_symbol列表中直接返回最后的bar
         而get_latest_bars(symbol, N=1)返回元素只有最后一个bar的list
@@ -117,6 +126,7 @@ class CSVDataHandler(DataHandler):
             return bars_list[-1]
 
     def get_latest_bar_datetime(self, symbol):
+        print("data.py - CSVDataHandler - get_latest_bar_datetime")
         """
         返回最后一个bar的Python datetime对象
         """
@@ -128,6 +138,7 @@ class CSVDataHandler(DataHandler):
             return bars_list[-1][1]
 
     def update_bars(self):
+        print("data.py - CSVDataHandler - update_bars")
         """
         对于symbol list中所有股票，将最新的bar更新到latest_symbol_data字典
         """
@@ -143,4 +154,5 @@ class CSVDataHandler(DataHandler):
 
 
 class HDF5DataHandler(DataHandler):
+    print("data.py - HDF5DataHandler")
     pass

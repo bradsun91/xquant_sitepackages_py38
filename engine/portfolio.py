@@ -7,12 +7,13 @@ Portfolio抽象基类/类
 @author: Leon Zhang
 @version: 0.4
 """
-
+print("py38_site_packages/portfolio.py")
 from abc import ABCMeta, abstractmethod
 from .event import OrderEvent
 
 
 class Portfolio(object):
+    print("portfolio.py - Portfolio")
     """
     Portfolio类处理头寸和持仓市值
     目前以Bar来计算，可以是秒、分钟、5分钟、30分钟、60分钟等的K线
@@ -22,6 +23,8 @@ class Portfolio(object):
 
     @abstractmethod
     def update_signal(self, event):
+        print("portfolio.py - Portfolio - update_signal")
+
         """
         基于portfolio的管理逻辑，使用SignalEvent产生新的orders
         """
@@ -29,6 +32,7 @@ class Portfolio(object):
 
     @abstractmethod
     def update_fill(self, event):
+        print("portfolio.py - Portfolio - update_fill")
         """
         从FillEvent中更新组合当前的头寸和持仓市值
         """
@@ -37,11 +41,13 @@ class Portfolio(object):
 
 # 一个基础的组合订单管理的类
 class BasicPortfolio(Portfolio):
+    print("portfolio.py - BasicPortfolio")
     """
     BasicPortfolio发送orders给brokerage对象，这里简单地使用固定的数量，
     不进行任何风险管理或仓位管理（这是不现实的！），仅供测试使用
     """
     def __init__(self, bars, events, start_date, initial_capital=1.0e5):
+        print("portfolio.py - BasicPortfolio - __init__")
         """
         使用bars和event队列初始化portfolio，同时包含起始时间和初始资本
         参数：
@@ -66,6 +72,7 @@ class BasicPortfolio(Portfolio):
         self.all_trades = []
 
     def construct_all_positions(self):
+        print("portfolio.py - BasicPortfolio - construct_all_positions")
         """
         构建头寸列表，其元素为通过字典解析产生的字典，每个symbol键的值为零
         且额外加入了datetime键
@@ -75,6 +82,7 @@ class BasicPortfolio(Portfolio):
         return [d]
 
     def construct_all_holdings(self):
+        print("portfolio.py - BasicPortfolio - construct_all_holdings")
         """
         构建全部持仓市值
         包括现金、累计费率和合计值的键
@@ -87,6 +95,7 @@ class BasicPortfolio(Portfolio):
         return [d]
 
     def construct_current_holdings(self):
+        print("portfolio.py - BasicPortfolio - construct_current_holdings")
         """
         构建当前持仓市值
         和construct_all_holdings()唯一不同的是返回字典，而非字典的列表
@@ -100,6 +109,7 @@ class BasicPortfolio(Portfolio):
 
     # 市场发生交易，我们需要更新持仓市值
     def update_timeindex(self):
+        print("portfolio.py - BasicPortfolio - update_timeindex")
         """
         用于追踪新的持仓市值
         向持仓头寸中加入新的纪录，也就是刚结束的这根完整k bar，bar的时间理解成endTime
@@ -137,6 +147,7 @@ class BasicPortfolio(Portfolio):
     # (1) 与FillEvent对象交互: 通过两个工具函数来实现Portfolio抽象基类的update_fill()
 
     def update_positions_from_fill(self, fill):
+        print("portfolio.py - BasicPortfolio - update_positions_from_fill")
         """
         从FillEvent对象中读取数据以更新头寸position
         参数：
@@ -151,6 +162,7 @@ class BasicPortfolio(Portfolio):
         self.current_positions[fill.symbol] += fill_dir * fill.quantity
 
     def update_holdings_from_fill(self, fill):
+        print("portfolio.py - BasicPortfolio - update_holdings_from_fill")
         """
         从FillEvent对象中读取数据以更新头寸市值 (holdings value)
         参数：
@@ -165,6 +177,8 @@ class BasicPortfolio(Portfolio):
         # fill_price = self.bars.get_latest_bars(fill.symbol)[0][5] # close price
         fill_price = fill.fill_price  # 成交价通过模拟交易所发回的Fill事件中读取
         cost = fill_dir * fill_price * fill.quantity
+        # print("成交价: {}".format(fill_price))
+        # print("成交金额: {}".format(cost))
 
         self.current_holdings[fill.symbol] += cost
         self.current_holdings['commission'] += fill.commission
@@ -172,6 +186,7 @@ class BasicPortfolio(Portfolio):
         self.current_holdings['total'] -= fill.commission
 
     def update_trades_from_fill(self, fill):
+        print("portfolio.py - BasicPortfolio - update_trades_from_fill")
         """
         从FillEvent对象中读取全部数据作为交易记录
         参数：
@@ -189,6 +204,7 @@ class BasicPortfolio(Portfolio):
         self.all_trades.append(current_trade)
 
     def update_fill(self, event):
+        print("portfolio.py - BasicPortfolio - update_fill")
         """
         从FillEvent中更新组合的头寸和市值，实现
         """
@@ -200,6 +216,7 @@ class BasicPortfolio(Portfolio):
     # (2) 与SignalEvent对象交互: 通过一个工具函数来实现Portfolio抽象基类的update_signal()
 
     def generate_naive_order(self, signal):
+        print("portfolio.py - BasicPortfolio - generate_naive_order")
         """
         简单地将signal对象乘以固定的数量作为OrderEvent对象，
         此函数不采取任何风险管理和仓位控制
@@ -210,9 +227,25 @@ class BasicPortfolio(Portfolio):
         direction = signal.signal_type
         # strength = signal.strength
         # mkt_quantity = floor(100 * strength)
+
+
+        # 改进持仓：
+        num_of_symbols = len(self.symbol_list)
+        each_position_amount = self.initial_capital/num_of_symbols
+        bar = self.bars.get_latest_bar(symbol)
+        # print(bar)
+        close = bar[5]
+        # print("", datetime_)
+
+
         if symbol.startswith(('0', '3', '6', 'A','B','C','D','E','F','G','H','I','J','K','L',
             'M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')):
-            mkt_quantity = 100  # 股票1手（100股）也包括美股
+            # mkt_quantity = 100  # 股票1手（100股）也包括美股
+            mkt_quantity = round(each_position_amount/close, 0)
+            # print("datetime: ".format(datetime_))
+            # print("Symbol: {}".format(symbol))
+            # print("计算出需要{}股准备开仓".format(mkt_quantity))
+            # print("开仓价: {}".format(close))
         else:
             mkt_quantity = 1  # 期货1手
 
@@ -237,6 +270,7 @@ class BasicPortfolio(Portfolio):
         return order
 
     def update_signal(self, event):
+        print("portfolio.py - BasicPortfolio - update_signal")
         """
         基于组合管理的逻辑，通过SignalEvent对象来产生新的orders
         """

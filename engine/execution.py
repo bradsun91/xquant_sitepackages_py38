@@ -20,6 +20,7 @@ from .slippage import ZeroSlippage, FixedPercentSlippage
 
 
 class ExecutionHandler(object):
+    print("execution.py - ExecutionHandler")
     """
     ExecutionHandler抽象基类，处理从Portfolio发来的订单，
     产生实际成交的Fill对象，即真实出现在市场中的成交
@@ -29,6 +30,7 @@ class ExecutionHandler(object):
 
     @abstractmethod
     def execute_order(self, event):
+        print("execution.py - ExecutionHandler - execute_order")
         """
         取一个Order事件并执行，产生Fill事件并放入Events队列
         参数：
@@ -38,11 +40,13 @@ class ExecutionHandler(object):
 
 
 class SimulatedExecutionHandler(ExecutionHandler):
+    print("execution.py - SimulatedExecutionHandler")
     """
     简单的模拟交易所
     未考虑等待时间、滑点、部分成交等
     """
     def __init__(self, bars, events, slippage_type='fixed', commission_type='default'):
+        print("execution.py - SimulatedExecutionHandler - __init__")
         """
         初始化
         参数：
@@ -58,6 +62,7 @@ class SimulatedExecutionHandler(ExecutionHandler):
         self.commission = 0.0
 
     def _trade_with_slippage(self, event):
+        print("execution.py - SimulatedExecutionHandler - _trade_with_slippage")
         """
         考虑滑点后的成交价
         """
@@ -71,6 +76,7 @@ class SimulatedExecutionHandler(ExecutionHandler):
             return order_price
 
     def _get_commission_commission(self, event):
+        print("execution.py - SimulatedExecutionHandler - _get_commission_commission")
         """
         计算股票或期货的手续费
         """
@@ -83,7 +89,7 @@ class SimulatedExecutionHandler(ExecutionHandler):
         elif self.commission_type == 'default':
             if event.symbol.startswith('6') or event.symbol.startswith(('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')):  # 上海交易所
                 if event.direction == 'BUY':  # 买入：过户费1000股1元+佣金单向万3
-                    print("手续费万三+其他费用1000股1元")
+                    # print("手续费万三+其他费用1000股1元")
                     commission = PerShareCommission(rate=0.0001, min_comm=1.0).get_commission(event.quantity) + \
                                  PerMoneyCommission(rate=3.0e-4, min_comm=5.0).get_commission(full_cost)
                 else:  # 卖出：印花税+过户费+佣金
@@ -108,6 +114,7 @@ class SimulatedExecutionHandler(ExecutionHandler):
         return commission
 
     def execute_order(self, event):
+        print("execution.py - SimulatedExecutionHandler - execute_order")
         """
         简单地将Order对象转变成Fill对象
         参数：

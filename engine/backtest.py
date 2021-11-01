@@ -21,6 +21,7 @@ logger = setup_logger()
 
 
 class Backtest(object):
+    print("backtest.py - Backtest")
     """
     封装回测设置和模块的接口
     """
@@ -29,6 +30,7 @@ class Backtest(object):
                  execution_handler, portfolio, strategy,
                  commission_type='zero', slippage_type='zero',
                  **params):
+        print("backtest.py - Backtest - __init__")
         """
         初始化回测
         csv_dir: CSV数据文件夹目录
@@ -72,6 +74,7 @@ class Backtest(object):
         self._generate_trading_instances()
 
     def _generate_trading_instances(self):
+        print("backtest.py - Backtest - _generate_trading_instances")
         """
         实例化类，得到data_handler(bars),strategy,portfolio(port),execution_handler(broker)对象
         """
@@ -85,6 +88,7 @@ class Backtest(object):
                                                             commission_type=self.commission_type)
 
     def _run_backtest(self):
+        print("backtest.py - Backtest - _run_backtest")
         """
         执行回测
         """
@@ -125,29 +129,34 @@ class Backtest(object):
             # time.sleep(self.heartbeat)
 
     def _force_clear(self):
+        print("backtest.py - Backtest - _force_clear")
         """
         回测结束，确保强制平仓
         """
-        for s in self.symbol_list:
-            self.portfolio.update_signal(SignalEvent(s, self.portfolio.current_datetime, 'EXIT'))
-            event = self.events.get()
-            if event is not None:
-                assert event.type == 'ORDER'
-                self.execution_handler.execute_order(event)
-                event = self.events.get()
-                assert event.type == 'FILL'
-                self.portfolio.update_fill(event)
-                self.portfolio.update_timeindex()
-                logger.info(' '.join(['Force Clear:', self.portfolio.current_datetime.strftime("%Y-%m-%d %H:%M:%S"),
-                                      s, 'EXIT']))
+        pass # Brad取消掉回测结束就必须要关仓的功能
+        
+        # for s in self.symbol_list:
+        #     self.portfolio.update_signal(SignalEvent(s, self.portfolio.current_datetime, 'EXIT'))
+        #     event = self.events.get()
+        #     if event is not None:
+        #         assert event.type == 'ORDER'
+        #         self.execution_handler.execute_order(event)
+        #         event = self.events.get()
+        #         assert event.type == 'FILL'
+        #         self.portfolio.update_fill(event)
+        #         self.portfolio.update_timeindex()
+        #         logger.info(' '.join(['Force Clear:', self.portfolio.current_datetime.strftime("%Y-%m-%d %H:%M:%S"),
+        #                               s, 'EXIT']))
 
     def _output_performance(self):
+        print("backtest.py - Backtest - _output_performance")
         """
         输出策略的回测结果
         """
         pass
 
     def trade_record(self):
+        print("backtest.py - Backtest - trade_record")
         """
         交易记录
         """
@@ -156,6 +165,7 @@ class Backtest(object):
         return trades.set_index('datetime')
 
     def simulate_trading(self):
+        print("backtest.py - Backtest - simulate_trading")
         """
         模拟回测并输出结果，返回资金曲线和头寸的DataFrame
         """

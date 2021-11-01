@@ -6,7 +6,7 @@
 @author: Leon Zhang
 @version: 0.4
 """
-print("python38_site_packages/perform.py")
+print("py38_site_packages/perform.py")
 import numpy as np
 import pandas as pd
 
@@ -69,6 +69,33 @@ def create_drawdowns_slow(pnl):
     return drawdown, drawdown.max(), duration.max()
 
 
+# def perform_metrics(total_series, periods=252):
+#     """
+#     资金曲线，夏普率和最大回撤的计算
+#     参数：
+#     total_series：账户资金的Series
+#     periods：回测时间尺度，默认为天，用于计算年化夏普率
+#     返回：
+#     perform, ret, sharpe_ratio, max_dd的元组
+#     """
+#     perform = total_series.to_frame('total')
+#     perform['return'] = perform['total'].pct_change()
+#     perform['equity_curve'] = (1.0 + perform['return']).cumprod()
+#     ret = perform['equity_curve'][-1] - 1  # 回测期间收益率
+#     yrs = len(perform['equity_curve'])/periods # 换算数据长度相当于多少年
+#     annualized_ret = (ret+1)**(1/yrs)-1 # 计算年化收益
+#     sharpe_ratio = np.sqrt(periods) * np.mean(perform['return']) / np.std(perform['return'])  # 夏普率
+
+#     perform['cum_max'] = perform['equity_curve'].cummax()
+#     perform['drawdown'] = perform['equity_curve'] / perform['cum_max'] - 1  # 回撤向量
+#     max_dd = perform['drawdown'].min()  # 最大回撤
+
+
+#     # i = holdings['drawdown'].index.get_loc(holdings['drawdown'].idxmax())  # 获取回撤周期的结束row序号
+#     # j = holdings['dd'].index.get_loc(holdings['equity_curve'].iloc[:i].idxmax())  # 回撤开始的row
+
+#     return perform, ret, sharpe_ratio, max_dd, annualized_ret
+
 def perform_metrics(total_series, periods=252):
     """
     资金曲线，夏普率和最大回撤的计算
@@ -82,16 +109,19 @@ def perform_metrics(total_series, periods=252):
     perform['return'] = perform['total'].pct_change()
     perform['equity_curve'] = (1.0 + perform['return']).cumprod()
     ret = perform['equity_curve'][-1] - 1  # 回测期间收益率
+    yrs = len(perform['equity_curve'])/periods # 换算数据长度相当于多少年
+    annualized_ret = (ret+1)**(1/yrs)-1 # 计算年化收益
     sharpe_ratio = np.sqrt(periods) * np.mean(perform['return']) / np.std(perform['return'])  # 夏普率
 
     perform['cum_max'] = perform['equity_curve'].cummax()
     perform['drawdown'] = perform['equity_curve'] / perform['cum_max'] - 1  # 回撤向量
     max_dd = perform['drawdown'].min()  # 最大回撤
 
+
     # i = holdings['drawdown'].index.get_loc(holdings['drawdown'].idxmax())  # 获取回撤周期的结束row序号
     # j = holdings['dd'].index.get_loc(holdings['equity_curve'].iloc[:i].idxmax())  # 回撤开始的row
 
-    return perform, ret, sharpe_ratio, max_dd
+    return perform, ret, sharpe_ratio, max_dd, annualized_ret
 
 
 def detail_blotter(backtest, positions, holdings, mode='simplified'):

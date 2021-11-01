@@ -7,8 +7,9 @@ Event类，在数据、组合、交易所（或模拟交易所）间流动的事
 @version: 0.4
 """
 
-
+print("py38_site_packages/event.py")
 class Event(object):
+    print("event.py - Event")
     """
     Event类是基类
     供子类（Tick, Bar, Signal, Order, Fill）继承
@@ -17,6 +18,7 @@ class Event(object):
 
 
 class TickEvent(Event):
+    print("event.py - TickEvent")
     """
     Tick事件类 (Basic Market Data)
     实验性引入，因为实时的bid/ask和历史的tick不一样，需再思考优化
@@ -24,23 +26,28 @@ class TickEvent(Event):
     tick: (symbol, datetime, bid, ask)的四元tuple
     """
     def __init__(self, tick):
+        print("event.py - TickEvent - __init__")
         self.type = 'TICK'
         self.tick = tick
 
     def __str__(self):
+        print("event.py - TickEvent - __str__")
         format_tick = "Type: %s, Symbol: %s, Datetime: %s, Bid: %s, Ask: %s" % (
                       self.type, self.tick[0], self.tick[1], self.tick[2], self.tick[3])
         return format_tick
 
     def __repr__(self):
+        print("event.py - TickEvent - __repr__")
         return str(self)
 
 
 class BarEvent(Event):
+    print("event.py - BarEvent")
     """
     Bar事件类 (Basic Market Data)
     """
     def __init__(self, bar):
+        print("event.py - BarEvent - __init__")
         """
         初始化
         参数：
@@ -50,6 +57,7 @@ class BarEvent(Event):
         self.bar = bar
 
     def __str__(self):
+        print("event.py - BarEvent - __str__")
         format_bar = "Type: %s, Symbol: %s, Datetime: %s, " \
                      "Open: %s, High: %s, Low: %s, Close: %s, Volume: %s" % (
                          self.type, self.bar[0], self.bar[1],
@@ -57,16 +65,19 @@ class BarEvent(Event):
         return format_bar
 
     def __repr__(self):
+        print("event.py - BarEvent - __repr__")
         return str(self)
 
 
 class SignalEvent(Event):
+    print("event.py - SignalEvent")
     """
     Signal事件类
     处理：从Strategy对象发送Signal，由下游的Portfolio对象接受
     """
 
     def __init__(self, symbol, datetime, signal_type, strategy_id=1, strength=1.0):
+        print("event.py - SignalEvent - __init__")
         """
         初始化SignalEvent对象
         参数：
@@ -85,6 +96,7 @@ class SignalEvent(Event):
 
 
 class OrderEvent(Event):
+    print("event.py - OrderEvent")
     """
     Order事件类
     处理：发送一个Order给执行（execution）系统，
@@ -92,6 +104,7 @@ class OrderEvent(Event):
     """
 
     def __init__(self, symbol, order_type, quantity, direction):
+        print("event.py - OrderEvent - __init__")
         """
         初始化OrderEvent对象
         设定市价委托('MKT')或者限价委托('LMT')，交易数量（整数），交易方向('BUY'或'SELL')
@@ -108,6 +121,7 @@ class OrderEvent(Event):
         self.direction = direction
 
     def print_order(self):
+        print("event.py - OrderEvent - print_order")
         """
         输出Order中的值
         """
@@ -116,6 +130,7 @@ class OrderEvent(Event):
 
 
 class FillEvent(Event):
+    print("event.py - FillEvent")
     """
     Fill事件类
     Fill or Kill (FOK)指令，全部成交否则取消 [选用，符合A股吗？]
@@ -124,6 +139,7 @@ class FillEvent(Event):
     """
     def __init__(self, timeindex, symbol, exchange, quantity, direction,
                  fill_price, commission):
+        print("event.py - FillEvent - __init__")
         """
         初始化FillEvent对象，成交信息
         参数：
