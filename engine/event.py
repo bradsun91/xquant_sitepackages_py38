@@ -56,7 +56,7 @@ class BarEvent(Event):
         self.type = 'BAR'
         self.bar = bar
 
-    def __str__(self):
+    def __str__(self):# __str__意味着如果用print(a)，就能把__str__里面的return内容打印出来
         print("event.py - BarEvent - __str__")
         format_bar = "Type: %s, Symbol: %s, Datetime: %s, " \
                      "Open: %s, High: %s, Low: %s, Close: %s, Volume: %s" % (
@@ -64,7 +64,7 @@ class BarEvent(Event):
                          self.bar[2], self.bar[3], self.bar[4], self.bar[5], self.bar[6])
         return format_bar
 
-    def __repr__(self):
+    def __repr__(self):# 意味着不需要用print，直接run 调用a，就可以输出里面return后面的内容
         print("event.py - BarEvent - __repr__")
         return str(self)
 

@@ -56,12 +56,14 @@ class BasicPortfolio(Portfolio):
         start_date: 组合起始的时间
         initial_capital: 起始的资本
         """
+        
         self.bars = bars
         self.events = events
         self.symbol_list = self.bars.symbol_list
         self.start_date = start_date
         self.current_datetime = start_date
         self.initial_capital = initial_capital
+        self.pos_weight = 1.0
 
         self.all_positions = self.construct_all_positions()  # 字典的列表
         self.current_positions = {s:0 for s in self.symbol_list}  # 字典
@@ -241,7 +243,8 @@ class BasicPortfolio(Portfolio):
         if symbol.startswith(('0', '3', '6', 'A','B','C','D','E','F','G','H','I','J','K','L',
             'M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')):
             # mkt_quantity = 100  # 股票1手（100股）也包括美股
-            mkt_quantity = round(each_position_amount/close, 0)
+            # position_weight需要在外部设置
+            mkt_quantity = round(each_position_amount*self.pos_weight/close, 0)
             # print("datetime: ".format(datetime_))
             # print("Symbol: {}".format(symbol))
             # print("计算出需要{}股准备开仓".format(mkt_quantity))
